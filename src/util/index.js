@@ -51,6 +51,11 @@ const util = {
        console.error('error',error)
     }
     return list
+  },
+  
+  getConfigurationUpdateOnFocus() {
+    const config = vscode.workspace.getConfiguration();
+    return config.get('binance-price-watch.updateOnFocus')
   }
 }
 

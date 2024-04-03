@@ -11,6 +11,7 @@ class App {
         this.statusBarItems = {}
         this.enable = true
         this.timer = null
+        this.updateOnFocus = true
         this.windowActive = !!vscode.window.state.focused
         this.comparisonPrice = {}
 
@@ -41,10 +42,10 @@ class App {
         this.coins = util.getConfigurationCoin()
         this.coinsMapText = util.getConfigurationMapText(this.coins)
         this.comparisonPrice = util.getConfigurationComparisonPrice()
-
         this.baseURL = util.getConfigurationBaseURL()
         this.updateInterval = util.getConfigurationTime()
         this.enable = util.getConfigurationEnable()
+        this.updateOnFocus = util.getConfigurationUpdateOnFocus()
 
         this.API_ADDRESS = `${this.baseURL}`
     }
@@ -59,10 +60,12 @@ class App {
 
         // FIXME
         let enableFetch = false
-        if(this.windowActive){
+        if (!this.updateOnFocus) {
             enableFetch = true
+        } else if (this.windowActive) {
             // this.updateGlobalUUID(this.uuid)
-        }else{
+            enableFetch = true
+        } else {
             enableFetch = false
             // const uuid = this.getGlobalUUID()
             // enableFetch = uuid === this.uuid
