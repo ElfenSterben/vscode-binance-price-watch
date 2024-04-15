@@ -8,7 +8,8 @@ class App {
     constructor(context){
         this.uuid = uuidv4()
         this.activateContext = context
-        this.statusBarItems = {}
+        this.statusBarItemsMap = {}
+        this.statusBarItems = []
         this.enable = true
         this.timer = null
         this.updateOnFocus = true
@@ -21,13 +22,35 @@ class App {
         context.subscriptions.push(vscode.window.onDidChangeWindowState(() => this.handleStateChange()))
     }
 
+    initItems() {
+        this.coins.forEach((coin) => {
+            const item = this.createStatusBarItem(coin)
+            this.statusBarItemsMap[coin] = item
+            this.statusBarItems.push(item)
+        })
+    }
+
+    deleteAllBar(){
+        this.statusBarItems.forEach((item) => {
+            item.hide()
+            item.dispose()
+        })
+        this.statusBarItems = []
+        this.statusBarItemsMap = {}
+    }
+
+    clean(){
+        this.timer && clearInterval(this.timer)
+        this.deleteAllBar()
+    }
+
     init() {
         this.initConfig()
-
+        this.clean()
         if(!this.enable){
-            this.clean()
             return
         }
+        this.initItems()
 
         if(!this.windowActive){
             return
@@ -92,6 +115,7 @@ class App {
                 data.sort((a, b) => {
                     return coins.indexOf(a) - coins.indexOf(b)
                 })
+                console.log(data)
                 data.forEach(i=>{
                     try {
                         const {symbol, price} = i
@@ -128,15 +152,13 @@ class App {
         const mapText = this.coinsMapText[symbol] || symbol.substring(0,2).toLowerCase()
         const text = `${mapText}:${price}`
         const rate = this.getEarnRate(symbol,price)
-        if (this.statusBarItems[symbol]) {
+        if (this.statusBarItemsMap[symbol]) {
             if(rate){
-                this.statusBarItems[symbol].text = `${text}[${rate}]`
-                this.statusBarItems[symbol].tooltip = rate
+                this.statusBarItemsMap[symbol].text = `${text}[${rate}]`
+                this.statusBarItemsMap[symbol].tooltip = rate
             }else{
-                this.statusBarItems[symbol].text = text
+                this.statusBarItemsMap[symbol].text = text
             }
-        } else {
-            this.statusBarItems[symbol] = this.createStatusBarItem(text,rate)
         }
     }
     getEarnRate(symbol, price){
@@ -157,22 +179,6 @@ class App {
             }
         }
         return ''
-    }
-    deleteBatItem(symbol){
-        if(this.statusBarItems[symbol]){
-            this.statusBarItems[symbol].hide()
-            this.statusBarItems[symbol].dispose()
-            delete this.statusBarItems[symbol]
-        }
-    }
-    deleteAllBar(){
-        Object.keys(this.statusBarItems).forEach((item) => {
-            this.deleteBatItem(item)
-        })
-    }
-    clean(){
-        this.timer && clearInterval(this.timer)
-        this.deleteAllBar()
     }
 
     getGlobalState(key){
