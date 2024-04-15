@@ -61,6 +61,31 @@
           "type": "string",
           "default": "",
           "description": "Calculate the real-time price and what the profit is for the price you set。\n(direction:up|down)\nexample: \n[{\"symbol\":\"btcusdt\",\"price\":60000,\"leverage\":25,\"direction\":\"up\"}]\n"
+        },
+        "binance-price-watch-v2.tickers": {
+          "type": "array",
+          "description": "list of ticker settings",
+          "items": {
+            "type": "object",
+            "properties": {
+              "symbol": {
+                "type": "string",
+                "default": "BTC"
+              },
+              "currency": {
+                "type": "string",
+                "default": "USDT"
+              },
+              "exchange": {
+                "type": "string",
+                "default": "CCCAGG"
+              },
+              "template": {
+                "type": "string",
+                "default": "{symbol}:{price}"
+              }
+            }
+          }
         }
       }
     }

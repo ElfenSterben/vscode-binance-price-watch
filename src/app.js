@@ -32,8 +32,6 @@ class App {
         if(!this.windowActive){
             return
         }
-
-        this.fetchData()
         this.timer = setInterval(() => {
             this.fetchData()
         }, this.updateInterval)
@@ -72,7 +70,6 @@ class App {
         }
 
         if(enableFetch){
-            this.fetchData()
             this.timer = setInterval(() => {
                 this.fetchData()
             }, this.updateInterval)
@@ -91,6 +88,10 @@ class App {
     handleData(data){
         if(data){
             if(Array.isArray(data)){
+                var coins = this.coins
+                data.sort((a, b) => {
+                    return coins.indexOf(a) - coins.indexOf(b)
+                })
                 data.forEach(i=>{
                     try {
                         const {symbol, price} = i
@@ -99,7 +100,7 @@ class App {
                         }
                     } catch (error) {
                         console.error(error)
-                    } 
+                    }
                 })
             }else if(typeof data === 'object'){
                 try {
